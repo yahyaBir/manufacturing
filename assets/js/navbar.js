@@ -1,84 +1,53 @@
 document.addEventListener('DOMContentLoaded', () => {
     const hamburger = document.querySelector('.hamburger');
     const navLinks = document.querySelector('.nav-links');
-    const dropdowns = document.querySelectorAll('.dropdown');
+    const dropdown = document.querySelector('.dropdown');
+    const dropdownLink = document.querySelector('.dropdown > a');
+    const dropdownContent = document.querySelector('.dropdown-content');
 
-    // Function to reset all dropdowns
-    const resetDropdowns = () => {
-        dropdowns.forEach(dropdown => {
-            dropdown.classList.remove('active');
-            const dropdownContent = dropdown.querySelector('.dropdown-content');
-            if (dropdownContent) {
-                dropdownContent.style.display = 'none';
-            }
-        });
-    };
-
-    // Function to handle responsive behavior
-    const handleResponsive = () => {
-        if (window.innerWidth > 768) {
-            navLinks.style.removeProperty('display');
-            navLinks.style.removeProperty('opacity');
-            navLinks.style.removeProperty('transform');
-            hamburger.classList.remove('active');
-            resetDropdowns();
-        }
-    };
-
-    // Add resize listener
-    window.addEventListener('resize', handleResponsive);
-
-    // Toggle mobile menu with animation
-    hamburger.addEventListener('click', () => {
-        if (navLinks.style.display === 'block') {
-            navLinks.style.opacity = '0';
-            navLinks.style.transform = 'translateY(-20px)';
-            setTimeout(() => {
-                navLinks.style.display = 'none';
-            }, 300);
-        } else {
-            navLinks.style.display = 'block';
-            setTimeout(() => {
-                navLinks.style.opacity = '1';
-                navLinks.style.transform = 'translateY(0)';
-            }, 10);
-        }
-        hamburger.classList.toggle('active');
-        resetDropdowns();
+    // Debug logs
+    console.log('Elements found:', {
+        hamburger,
+        navLinks,
+        dropdown,
+        dropdownLink,
+        dropdownContent
     });
 
-    // Handle dropdowns in mobile view
-    dropdowns.forEach(dropdown => {
-        const dropdownLink = dropdown.querySelector('a');
-        const dropdownContent = dropdown.querySelector('.dropdown-content');
+    // Hamburger menu toggle
+    if (hamburger && navLinks) {
+        hamburger.onclick = function() {
+            this.classList.toggle('active');
+            navLinks.classList.toggle('active');
+        }
+    }
 
-        dropdownLink.addEventListener('click', (e) => {
+    // Dropdown toggle
+    if (dropdownLink && dropdownContent) {
+        dropdownLink.addEventListener('click', function(e) {
             if (window.innerWidth <= 768) {
                 e.preventDefault();
+                console.log('Dropdown clicked'); // Debug log
+                
+                // Toggle dropdown visibility
                 dropdownContent.style.display = 
                     dropdownContent.style.display === 'block' ? 'none' : 'block';
-                dropdown.classList.toggle('active');
+                
+                // Toggle active class for rotation of dropdown icon
+                this.classList.toggle('active');
+                
+                console.log('Dropdown display:', dropdownContent.style.display); // Debug log
             }
         });
-    });
+    }
 
-    // Close menu when clicking outside ONLY in mobile view
+    // Close dropdown when clicking outside
     document.addEventListener('click', (e) => {
-        const isMobile = window.innerWidth <= 768;
-        const isMenuOpen = navLinks.style.display === 'block';
-        const clickedOutside = !navLinks.contains(e.target) && !hamburger.contains(e.target);
-
-        if (isMobile && isMenuOpen && clickedOutside) {
-            navLinks.style.opacity = '0';
-            navLinks.style.transform = 'translateY(-20px)';
-            setTimeout(() => {
-                navLinks.style.display = 'none';
-            }, 300);
-            hamburger.classList.remove('active');
-            resetDropdowns();
+        if (window.innerWidth <= 768) {
+            if (!dropdown.contains(e.target)) {
+                dropdownContent.style.display = 'none';
+                dropdownLink.classList.remove('active');
+            }
         }
     });
-
-    // Initial check for screen size
-    handleResponsive();
 }); 
